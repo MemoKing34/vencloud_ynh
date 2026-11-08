@@ -1,0 +1,52 @@
+# Checks upstream Vencloud every day and, when a new commit or tag is found,
+# pushes the updated manifest to a ci-auto-update-* branch and opens a pull
+# request against the testing branch. A human then reviews, tests and merges it.
+name: Check for upstream updates
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  updater:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the testing branch
+        uses: actions/checkout@v4
+        with:
+          ref: testing
+
+      - name: Check upstream and update the manifest
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/workflows/updater.sh manifest.toml
+
+      - name: Open a pull request to testing
+        if: steps.check.outputs.PROCEED == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: testing
+          branch: ci-auto-update-v${{ steps.check.outputs.VERSION }}
+          delete-branch: true
+          commit-message: "Upgrade to v${{ steps.check.outputs.VERSION }}"
+          title: "Upgrade to version ${{ steps.check.outputs.VERSION }}"
+          body: |
+            Upgrade Vencloud to `${{ steps.check.outputs.VERSION }}` (upstream ref `${{ steps.check.outputs.REF }}`).
+
+            - Upstream commit: ${{ steps.check.outputs.COMMIT_URL }}
+            - Changes since the packaged version: https://github.com/Vencord/Vencloud/commits
+
+            This PR was opened automatically. Before merging:
+            - [ ] Check the upstream changes (new env variables, Redis changes, breaking changes…)
+            - [ ] Check that the Go version in `[resources.go]` still matches upstream's `go.mod`
+            - [ ] Test the upgrade on a YunoHost instance
+          labels: |
+            dependencies
+            automated
