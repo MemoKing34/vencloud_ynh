@@ -1,8 +1,7 @@
 #!/bin/bash
 
-## this script is only run if actual change to domain/path is detected, if you're here either $domain or $path changed
-## new location is available via $domain and $path (or $new_domain and $new_path variables if you want to be explicit)
-## old values are available via, you guessed it, $old_domain and $old_path
+## Vencloud is always served at the root of a domain, so only the domain can change.
+## The Discord OAuth redirect URI depends on it and has to be regenerated.
 
 #=================================================
 # IMPORT GENERIC HELPERS
@@ -23,14 +22,16 @@ ynh_systemctl --service="$app" --action="stop"
 #=================================================
 ynh_script_progression "Updating NGINX web server configuration..."
 
-# this will most likely adjust NGINX config correctly
 ynh_config_change_url_nginx
 
 #=================================================
 # SPECIFIC MODIFICATIONS
 #=================================================
+ynh_script_progression "Updating the Discord OAuth redirect URI..."
 
-## do any changes to files that reference specific installation domain/path, i.e. regenerate configs etc
+ynh_config_add --template="vencloud.env" --destination="$install_dir/.env"
+chmod 400 "$install_dir/.env"
+chown "$app:$app" "$install_dir/.env"
 
 #=================================================
 # START SYSTEMD SERVICE

@@ -1,7 +1,5 @@
-This is a dummy disclaimer to display after the install
+Vencloud is now running at <https://__DOMAIN__>.
 
-The app url is <https://__DOMAIN____PATH__>
+Make sure `https://__DOMAIN__/v1/oauth/callback` is listed in the **Redirects** of your Discord application's OAuth2 tab.
 
-The app install dir is `__INSTALL_DIR__`
-
-The app id is `__ID__`
+To use it, in Discord open **Settings → Vencord → Backup & Restore → Cloud Integrations**, set the **Backend URL** to `https://__DOMAIN__`, then enable cloud integrations.

@@ -1,0 +1,55 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/config_panel.v1.schema.json
+
+version = "1.0"
+
+[main]
+name.en = "Vencloud configuration"
+name.fr = "Configuration de Vencloud"
+services = ["__APP__"]
+
+    [main.discord]
+    name.en = "Discord application"
+    name.fr = "Application Discord"
+
+        [main.discord.discord_client_id]
+        ask.en = "Discord application client ID"
+        ask.fr = "ID client de l'application Discord"
+        type = "string"
+        bind = "DISCORD_CLIENT_ID:__INSTALL_DIR__/.env"
+
+        [main.discord.discord_client_secret]
+        ask.en = "Discord application client secret"
+        ask.fr = "Secret client de l'application Discord"
+        type = "string"
+        bind = "DISCORD_CLIENT_SECRET:__INSTALL_DIR__/.env"
+
+    [main.access]
+    name.en = "Access"
+    name.fr = "Accès"
+
+        [main.access.allowed_users]
+        ask.en = "Allowed Discord user IDs (comma separated)"
+        ask.fr = "ID des utilisateurs Discord autorisés (séparés par des virgules)"
+        help.en = "Leave empty to allow every Discord user."
+        help.fr = "Laissez vide pour autoriser tous les utilisateurs Discord."
+        type = "string"
+        optional = true
+        bind = "ALLOWED_USERS:__INSTALL_DIR__/.env"
+
+        [main.access.size_limit]
+        ask.en = "Maximum settings backup size (bytes)"
+        ask.fr = "Taille maximale d'une sauvegarde de paramètres (octets)"
+        help.en = "Must stay below 64MB, the upload limit set in NGINX."
+        help.fr = "Doit rester inférieure à 64 Mo, la limite d'envoi configurée dans NGINX."
+        type = "number"
+        min = 1
+        max = 64000000
+        bind = "SIZE_LIMIT:__INSTALL_DIR__/.env"
+
+        [main.access.root_redirect]
+        ask.en = "Root redirect URL"
+        ask.fr = "URL de redirection de la racine"
+        help.en = "Visitors of the root URL are redirected here. It MUST link to this instance's source code (AGPL-3.0 requirement)."
+        help.fr = "Les visiteurs de l'URL racine sont redirigés ici. Elle DOIT pointer vers le code source de cette instance (exigence de l'AGPL-3.0)."
+        type = "url"
+        bind = "ROOT_REDIRECT:__INSTALL_DIR__/.env"

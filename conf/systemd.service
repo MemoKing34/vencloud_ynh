@@ -1,13 +1,17 @@
 [Unit]
-Description=Small description of the service
-After=network.target
+Description=Vencloud: Vencord cloud settings sync API
+After=network.target __APP__-redis.service
+Requires=__APP__-redis.service
 
 [Service]
 Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
-ExecStart=__INSTALL_DIR__/script
+EnvironmentFile=__INSTALL_DIR__/.env
+ExecStart=__INSTALL_DIR__/vencloud
+Restart=on-failure
+RestartSec=5
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit
 
